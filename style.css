@@ -350,6 +350,10 @@ input, select, textarea {
 .hero {
   min-height: 100vh;
   background: linear-gradient(135deg, var(--green-dark) 0%, #0a200a 40%, #0f2d0f 70%, var(--green-dark) 100%);
+  background-image: url('assets/images/hero-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: multiply;
   display: flex;
   align-items: center;
   position: relative;
@@ -495,37 +499,106 @@ input, select, textarea {
   top: 50%;
   transform: translateY(-50%);
   z-index: 1;
-  opacity: 0.6;
+  opacity: 0.85;
 }
-.hero-brush-anim { position: relative; width: 300px; height: 300px; }
+.hero-brush-anim {
+  position: relative;
+  width: 340px;
+  height: 340px;
+}
+
+/* Each ring is a wrapper div centered, containing a rotating border circle */
 .brush-ring {
   position: absolute;
   border-radius: 50%;
-  border: 2px solid var(--green-accent);
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0.3;
+  top: 50%;
+  left: 50%;
 }
-.ring-1 { width: 280px; height: 280px; animation: ringPulse 3s ease-in-out infinite; }
-.ring-2 { width: 200px; height: 200px; animation: ringPulse 3s ease-in-out infinite 1s; border-color: var(--green-light); }
-.ring-3 { width: 120px; height: 120px; animation: ringPulse 3s ease-in-out infinite 2s; }
+
+/* Ring 1 - outermost, slow clockwise */
+.ring-1 {
+  width: 320px; height: 320px;
+  margin-left: -160px; margin-top: -160px;
+  border: 2px dashed var(--green-accent);
+  opacity: 0.4;
+  animation: rotateCW 12s linear infinite;
+}
+
+/* Ring 2 - middle, counter-clockwise */
+.ring-2 {
+  width: 230px; height: 230px;
+  margin-left: -115px; margin-top: -115px;
+  border: 2px solid var(--green-light);
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  opacity: 0.6;
+  animation: rotateCCW 8s linear infinite;
+}
+
+/* Ring 3 - inner, fast clockwise */
+.ring-3 {
+  width: 150px; height: 150px;
+  margin-left: -75px; margin-top: -75px;
+  border: 3px solid var(--green-accent);
+  border-left-color: transparent;
+  border-right-color: transparent;
+  opacity: 0.7;
+  animation: rotateCW 4s linear infinite;
+}
+
+/* Dots on ring 1 to make rotation visible */
+.ring-1::before, .ring-1::after {
+  content: '';
+  position: absolute;
+  width: 10px; height: 10px;
+  background: var(--green-accent);
+  border-radius: 50%;
+}
+.ring-1::before { top: -5px; left: 50%; margin-left: -5px; }
+.ring-1::after  { bottom: -5px; left: 50%; margin-left: -5px; }
+
+/* Dots on ring 2 */
+.ring-2::before, .ring-2::after {
+  content: '';
+  position: absolute;
+  width: 8px; height: 8px;
+  background: var(--green-light);
+  border-radius: 50%;
+}
+.ring-2::before { top: -4px; left: 50%; margin-left: -4px; }
+.ring-2::after  { bottom: -4px; left: 50%; margin-left: -4px; }
+
 .brush-core {
   position: absolute;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 80px; height: 80px;
-  background: var(--green-primary);
+  width: 90px; height: 90px;
+  background: linear-gradient(135deg, var(--green-primary), var(--green-mid));
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  font-size: 2.2rem;
   color: var(--white);
-  box-shadow: 0 0 40px rgba(45,138,45,0.5);
+  box-shadow: 0 0 0 6px rgba(45,138,45,0.2), 0 0 40px rgba(45,138,45,0.5);
+  animation: corePulse 3s ease-in-out infinite;
+  z-index: 2;
 }
-@keyframes ringPulse {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
-  50% { transform: translate(-50%, -50%) scale(1.08); opacity: 0.15; }
+.brush-core i {
+  animation: rotateCW 20s linear infinite;
+}
+
+@keyframes rotateCW {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes rotateCCW {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+@keyframes corePulse {
+  0%, 100% { box-shadow: 0 0 0 6px rgba(45,138,45,0.2), 0 0 40px rgba(45,138,45,0.5); }
+  50%       { box-shadow: 0 0 0 14px rgba(45,138,45,0.1), 0 0 60px rgba(45,138,45,0.7); }
 }
 
 /* Scroll Indicator */
@@ -755,12 +828,13 @@ input, select, textarea {
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
-  transition: var(--transition);
+  transition: box-shadow 0.4s ease, border-color 0.4s ease;
   position: relative;
   border: 1px solid var(--gray-200);
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 .product-card:hover {
-  transform: translateY(-10px);
   box-shadow: var(--shadow-lg);
   border-color: var(--green-light);
 }
@@ -1669,3 +1743,34 @@ input, select, textarea {
   .inv-items-table th, .inv-items-table td { padding: 0.5rem; }
   .bank-grid { grid-template-columns: 1fr 1fr; }
 }
+
+/* ============================================
+   REAL PRODUCT IMAGES
+   ============================================ */
+.product-img.real-img {
+  background: #000;
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.product-img.real-img img {
+  width: 100%;
+  height: 240px;
+  object-fit: contain;
+  transition: transform 0.5s ease;
+  padding: 0.5rem;
+  background: #000;
+}
+.product-card:hover .product-img.real-img img { transform: scale(1.08); }
+
+/* Logo image */
+.nav-logo-img {
+  width: 40px; height: 40px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--green-accent);
+  object-fit: contain;
+  background: var(--green-dark);
+}
+

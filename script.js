@@ -37,7 +37,6 @@ document.addEventListener('DOMContentLoaded', function () {
   initActiveNavLinks();
   initParallax();
   initFormValidation();
-  initProductCardHover();
 });
 
 /* ============================================
@@ -241,49 +240,13 @@ function submitForm(e) {
    ============================================ */
 function downloadCatalogue(e) {
   e.preventDefault();
-  // Since no actual PDF exists, open WhatsApp to request it
-  const waUrl = 'https://wa.me/919558348763?text=Hello EKA Manufacturing, I would like to download your product catalogue. Please send it to me.';
-  const proceed = confirm('The catalogue will be sent to you via WhatsApp. Click OK to proceed.');
-  if (proceed) {
-    window.open(waUrl, '_blank');
-  }
-}
-
-/* ============================================
-   PRODUCT CARD HOVER EFFECTS
-   ============================================ */
-function initProductCardHover() {
-  const cards = document.querySelectorAll('.product-card');
-
-  cards.forEach(card => {
-    card.addEventListener('mouseenter', function (e) {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      const rotateX = ((y - centerY) / centerY) * -4;
-      const rotateY = ((x - centerX) / centerX) * 4;
-      card.style.transform = `translateY(-10px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-      card.style.transition = 'transform 0.15s ease';
-    });
-
-    card.addEventListener('mousemove', function (e) {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      const rotateX = ((y - centerY) / centerY) * -4;
-      const rotateY = ((x - centerX) / centerX) * 4;
-      card.style.transform = `translateY(-10px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-    });
-
-    card.addEventListener('mouseleave', function () {
-      card.style.transform = '';
-      card.style.transition = 'transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease';
-    });
-  });
+  // Direct PDF download
+  const link = document.createElement('a');
+  link.href = 'assets/images/EKA-Manufacturing-Catalogue.pdf';
+  link.download = 'EKA-Manufacturing-Product-Catalogue-2024.pdf';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 /* ============================================
@@ -465,3 +428,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
   mapObserver.observe(mapContainer);
 });
+
