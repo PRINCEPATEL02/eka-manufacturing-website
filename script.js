@@ -223,7 +223,7 @@ function submitForm(e) {
     // Suggest WhatsApp follow-up
     setTimeout(function () {
       const name = 'Customer';
-      const waUrl = `https://wa.me/919558348763?text=Hello EKA Manufacturing, I just submitted an inquiry from your website. Please get back to me.`;
+      const waUrl = `https://wa.me/919484569699?text=Hello EKA Manufacturing, I just submitted an inquiry from your website. Please get back to me.`;
       const followUp = confirm('Your inquiry has been noted! Would you like to also send it via WhatsApp for faster response?');
       if (followUp) {
         window.open(waUrl, '_blank');
