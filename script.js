@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   initNavbar();
   initHamburger();
+  initDropdown();
   initBackToTop();
   initActiveNavLinks();
   initParallax();
@@ -69,13 +70,15 @@ function initHamburger() {
   hamburger.addEventListener('click', function () {
     hamburger.classList.toggle('active');
     navLinks.classList.toggle('open');
+    document.body.classList.toggle('menu-open');
   });
 
   // Close menu when a link is clicked
-  navLinks.querySelectorAll('.nav-link').forEach(link => {
+  navLinks.querySelectorAll('.nav-link, .dropdown-item').forEach(link => {
     link.addEventListener('click', function () {
       hamburger.classList.remove('active');
       navLinks.classList.remove('open');
+      document.body.classList.remove('menu-open');
     });
   });
 
@@ -84,7 +87,26 @@ function initHamburger() {
     if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
       hamburger.classList.remove('active');
       navLinks.classList.remove('open');
+      document.body.classList.remove('menu-open');
     }
+  });
+}
+
+/* ============================================
+   DROPDOWN TOGGLE FOR MOBILE
+   ============================================ */
+function initDropdown() {
+  const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+  
+  dropdownToggles.forEach(toggle => {
+    toggle.addEventListener('click', function(e) {
+      // Only handle click on mobile
+      if (window.innerWidth <= 1024) {
+        e.preventDefault();
+        const dropdownItem = this.parentElement;
+        dropdownItem.classList.toggle('active');
+      }
+    });
   });
 }
 
@@ -203,36 +225,74 @@ function initParallax() {
 }
 
 /* ============================================
-   CONTACT FORM SUBMISSION
+   EMAILJS CONFIGURATION
+   ============================================
+   To make the form work, you need to:
+   1. Sign up at https://www.emailjs.com/ (free)
+   2. Create an Email Service (e.g., connect your Gmail)
+   3. Create an Email Template
+   4. Replace the values below with your actual credentials:
+      - YOUR_PUBLIC_KEY: Found in EmailJS Dashboard → Account
+      - YOUR_SERVICE_ID: Found in EmailJS Dashboard → Email Services
+      - YOUR_TEMPLATE_ID: Found in EmailJS Dashboard → Email Templates
+   
+   In your EmailJS template, use these variables:
+   {{from_name}}, {{phone}}, {{reply_to}}, {{product}}, {{message}}
+   ============================================ */
+const EMAILJS_CONFIG = {
+  publicKey: "c1iZU7eKx3Q_A-1aB",
+  serviceId: "service_4bt4jt5",
+  templateId: "template_cl0l6mr"
+};
+
+/* ============================================
+   CONTACT FORM SUBMISSION — EmailJS
    ============================================ */
 function submitForm(e) {
   e.preventDefault();
   const form = e.target;
   const btn = form.querySelector('button[type="submit"]');
 
+  // Gather values
+  const fromName    = document.getElementById('inq-name').value.trim();
+  const phone       = document.getElementById('inq-phone').value.trim();
+  const replyTo     = document.getElementById('inq-email').value.trim();
+  const product     = document.getElementById('inq-product').value || 'Not specified';
+  const message     = document.getElementById('inq-message').value.trim();
+
   // Show loading state
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
-  // Simulate form submission (replace with actual backend or mailto)
-  setTimeout(function () {
+  // Send via EmailJS
+  emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
+    from_name: fromName,
+    phone: phone,
+    reply_to: replyTo || 'website@visitor.com',
+    product: product,
+    message: message
+  })
+  .then(function(response) {
     btn.innerHTML = '<i class="fas fa-check"></i> Inquiry Sent Successfully!';
     btn.style.background = '#25D366';
     form.reset();
-
-    // Suggest WhatsApp follow-up
     setTimeout(function () {
-      const name = 'Customer';
-      const waUrl = `https://wa.me/919484569699?text=Hello EKA Manufacturing, I just submitted an inquiry from your website. Please get back to me.`;
-      const followUp = confirm('Your inquiry has been noted! Would you like to also send it via WhatsApp for faster response?');
-      if (followUp) {
-        window.open(waUrl, '_blank');
-      }
       btn.disabled = false;
       btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Inquiry';
       btn.style.background = '';
-    }, 2000);
-  }, 1500);
+    }, 3000);
+  })
+  .catch(function(err) {
+    console.error('EmailJS Error:', err);
+    btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Failed to Send';
+    btn.style.background = '#e74c3c';
+    alert('Failed to send email. Please try again or contact us directly.');
+    setTimeout(function () {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Inquiry';
+      btn.style.background = '';
+    }, 3000);
+  });
 }
 
 /* ============================================
@@ -242,7 +302,7 @@ function downloadCatalogue(e) {
   e.preventDefault();
   // Direct PDF download
   const link = document.createElement('a');
-  link.href = 'assets/images/EKA-Manufacturing-Catalogue.pdf';
+  link.href = 'assets/images/EKA MANUFACTURING CATLOGUE.pdf';
   link.download = 'EKA-Manufacturing-Product-Catalogue-2024.pdf';
   document.body.appendChild(link);
   link.click();
@@ -396,6 +456,7 @@ document.addEventListener('keydown', function (e) {
     if (hamburger && navLinks) {
       hamburger.classList.remove('active');
       navLinks.classList.remove('open');
+      document.body.classList.remove('menu-open');
     }
   }
 });
